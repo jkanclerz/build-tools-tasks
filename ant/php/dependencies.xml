@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dependencies">
+    <target name="dev" description="install dev dependencies">
+        <exec executable="composer" dir="${WORKSPACE}">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+        </exec>
+    </target>
+
+    <target name="prod" description="install prod dependencies">
+        <exec executable="composer" dir="${WORKSPACE}">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+            <arg value="--optimize-autoloader" />
+            <arg value="--no-dev" />
+        </exec>
+    </target>
+</project>
