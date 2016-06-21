@@ -5,6 +5,8 @@
     <property environment="env"/>
     <property name="WORKSPACE" value="./my_workspace"/>
     <property name="BUILD_ID" value="ANT_BUILD"/>
+    <property name="Environment" value="DEVELOPMENT"/>
+    <property name="Site" value="mysite.dev"/>
     <property name="label" value="${env.JOB_NAME}-${env.BUILD_NUMBER}"/>
 
     <!-- DEFINE CODE_STYLE PROPERTIES-->

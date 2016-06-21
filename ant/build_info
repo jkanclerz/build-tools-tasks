@@ -1,8 +1,0 @@
-#Build Information File - DO NOT ALTER.
-#Tue, 21 Jun 2016 20:32:48 +0200
-
-build.id=ANT_BUILD
-TAG=fatal\: No names found, cannot describe anything.
-Revision=HEAD\nfatal\: ambiguous argument 'HEAD'\: unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this\:\n'git <command> [<revision>...] -- [<file>...]'
-build.number=0002
-build.date=21.06.2016 20\:32
