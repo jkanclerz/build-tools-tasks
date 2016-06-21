@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Code Style" default="code-style">
+
+    <property name="STYLE_WORKSPACE" value="/"/>
+    <property name="STATS_OUTPUT" value="${STYLE_WORKSPACE}/stats"/>
+    <property name="SOURCE_DIR" value="${STYLE_WORKSPACE}/src"/>
+
+    <target
+            name="code-style"
+            depends="create-stats-dir"
+    >
+        <echo message="Beginning code style tasks..."/>
+        <echo message="Result output: ${STATS_OUTPUT}"/>
+        <antcall target="php-lint"/>
+        <antcall target="ci:phpmd"/>
+        <antcall target="ci:phpcs"/>
+        <antcall target="ci:phploc"/>
+        <antcall target="ci:pdepend"/>
+        <antcall target="ci:phpcpd"/>
+    </target>
+
+    <target name="create-stats-dir" description="Creates the stats directory.">
+        <echo message="Creating stats directory." />
+        <mkdir dir="${STATS_OUTPUT}" />
+    </target>
+
+    <target name="phpmd" description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the">
+        <exec executable="phpmd">
+            <arg path="src,tests" />
+            <arg value="text" />
+            <arg value="phpmd.xml" />
+        </exec>
+    </target>
+
+    <target name="ci:phpmd" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
+        <exec executable="phpmd" taskname="phpmd">
+            <arg path="src" />
+            <arg value="xml" />
+            <arg value="phpmd.xml" />
+            <arg value="--reportfile" />
+            <arg value="${STATS_OUTPUT}/phpmd.xml" />
+        </exec>
+    </target>
+
+    <target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage">
+        <echo message="basedir: ${SOURCE_DIR}" />
+        <exec executable="phpcs" taskname="phpcs">
+            <arg value="--standard=PSR2" />
+            <arg value="--extensions=php" />
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+
+    <target name="ci:phpcs" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
+        <echo message="Code standard checking: ${SOURCE_DIR}" />
+        <exec executable="phpcs" output="/dev/null" taskname="phpcs">
+            <arg value="--report=checkstyle" />
+            <arg value="--report-file=${STATS_OUTPUT}/checkstyle.xml" />
+            <arg value="--standard=PSR2" />
+            <arg value="--extensions=php" />
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+
+    <target name="php-lint">
+        <apply executable="php" failonerror="true" taskname="lint">
+            <arg value="-l" />
+            <fileset dir="${SOURCE_DIR}">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+        </apply>
+    </target>
+
+    <target name="phploc" description="Measure project size using PHPLOC">
+        <exec executable="phploc">
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+
+    <target name="ci:phploc" description="Measure project size using PHPLOC and log result in XML format">
+        <exec executable="phploc" taskname="phploc">
+            <arg value="--log-xml" />
+            <arg path="${STATS_OUTPUT}/phploc.xml" />
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+        <property name="phploc.done" value="true"/>
+    </target>
+
+    <target name="ci:pdepend" description="Calculate software metrics using PHP_Depend">
+        <exec executable="pdepend">
+            <arg value="--jdepend-xml=${STATS_OUTPUT}/jdepend.xml" />
+            <arg value="--summary-xml=${STATS_OUTPUT}/depend-summary.xml" />
+            <arg value="--jdepend-chart=${STATS_OUTPUT}/dependencies.svg" />
+            <arg value="--overview-pyramid=${STATS_OUTPUT}/overview-pyramid.svg" />
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+
+    <target name="phpcpd" description="Find duplicate code using PHPCPD">
+        <exec executable="phpcpd" taskname="phpcpd">
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+
+    <target name="ci:phpcpd" description="Find duplicate code using PHPCPD">
+        <exec executable="phpcpd" taskname="phpcpd-ci">
+            <arg value="--log-pmd" />
+            <arg value="${STATS_OUTPUT}/pmd-cpd.xml" />
+            <arg path="${SOURCE_DIR}" />
+        </exec>
+    </target>
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Common" default="common">
+
+    <property name="WORKSPACE" value="/"/>
+    <property name="build.info" value="build_info"/>
+
+    <target name="getgitdetails" >
+        <exec executable="git" outputproperty="git.tagstring">
+            <arg value="describe"/>
+        </exec>
+        <exec executable="git" outputproperty="git.revision">
+            <arg value="rev-parse"/>
+            <arg value="HEAD"/>
+        </exec>
+    </target>
+
+    <target name="info"  depends="getgitdetails" description="Provides output about this build and environment.">
+        <echo message="Using:" level="info"/>
+        <echo message="${os.name} ${os.version}" level="info"/>
+        <echo message="Using PATH variable: ${env.PATH}" level="info"/>
+        <echo message="${ant.version}" level="info"/>
+        <echo message="${ant.file} = ${ant.project.name}" level="info"/>
+        <echo message="User = ${user.name}:${user.home}" level="info"/>
+        <echo message="BUILD_ID = ${BUILD_ID}" level="info"/>
+        <echo message="WORKSPACE = ${WORKSPACE}" level="info"/>
+        <echo message="Site = ${Site}" level="info"/>
+        <echo message="ENVIRONMENT = ${Environment}" level="info"/>
+        <echo message="TAG = ${git.tagstring}" level="info"/>
+        <echo message="Revision = ${git.revision}" level="info"/>
+        <echo message="BUILD Label= ${label}" level="info"/>
+        <!-- Creates a build info file. -->
+        <propertyfile file="${build.info}" comment="Build Information File - DO NOT ALTER.">
+            <entry key="build.id" value="${BUILD_ID}"/>
+            <entry key="TAG" value="${git.tagstring}"/>
+            <entry key="Revision" value="${git.revision}"/>
+            <entry key="build.number" type="int" default="0000" operation="+" pattern="0000"/>
+            <entry key="build.date" type="date" value="now" pattern="dd.MM.yyyy HH:mm"/>
+        </propertyfile>
+    </target>
+</project>

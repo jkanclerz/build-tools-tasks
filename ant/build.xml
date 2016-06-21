@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cewe" default="build" basedir=".">
+
+    <!-- DEFINE PROPERTIES-->
+    <property environment="env"/>
+    <property name="WORKSPACE" value="./my_workspace"/>
+    <property name="BUILD_ID" value="ANT_BUILD"/>
+    <property name="label" value="${env.JOB_NAME}-${env.BUILD_NUMBER}"/>
+
+    <!-- DEFINE CODE_STYLE PROPERTIES-->
+    <property name="STYLE_WORKSPACE" value="${basedir}"/>
+    <property name="STATS_OUTPUT" value="${default.WORKSPACE}/stats"/>
+    <property name="SOURCE_DIR" value="${STYLE_WORKSPACE}/src"/>
+
+    <!-- IMPORT DEPENDENCIES-->
+    <import file="common/common.xml" as="common"/>
+    <import file="php/codestyle.xml" as="codestyle"/>
+    <import file="php/tests.xml" as="tests"/>
+
+    <target name="info" depends="common.info"/>
+    <target name="code-style" depends="codestyle.code-style"/>
+
+    <!-- Cleans the build directory. -->
+    <target name="clean-build-dir" description="Cleans the build directory.">
+        <echo message="Cleaning build directory."/>
+        <delete dir="${WORKSPACE}/stats"/>
+        <delete dir="${WORKSPACE}/dist"/>
+        <delete file="${WORKSPACE}/web/app_dev.php"/>
+        <delete file="${WORKSPACE}/web/app_test.php"/>
+        <delete file="${WORKSPACE}/web/api_dev.php"/>
+        <delete file="${WORKSPACE}/web/api_test.php"/>
+        <delete file="${WORKSPACE}/app/config/config_test.yml"/>
+        <delete file="${WORKSPACE}/app/config/config_dev.yml"/>
+        <delete file="${WORKSPACE}/app/config/config_apitest.yml"/>
+        <delete file="${WORKSPACE}/app/config/config_apidev.yml"/>
+    </target>
+
+    <!-- Creates the build directory. -->
+    <target name="create-build-dir" depends="clean-build-dir" description="Creates the build directory.">
+        <echo message="Creating build directory."/>
+        <mkdir dir="${WORKSPACE}/stats"/>
+        <mkdir dir="${WORKSPACE}/dist"/>
+    </target>
+
+    <!-- Copies the cloned files to the build directory. -->
+    <target name="copy-files-to-build-dir" description="Copies the cloned files to the build directory.">
+        <echo message="Copying files to build directory."/>
+        <copy todir="${WORKSPACE}/dist/app">
+            <fileset dir="${basedir}/app">
+                <exclude name="logs/**"/>
+                <exclude name="sessions/**"/>
+                <exclude name="spool/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${WORKSPACE}/dist/src">
+            <fileset dir="${basedir}/src"/>
+        </copy>
+        <copy todir="${WORKSPACE}/dist/web">
+            <fileset dir="${basedir}/web">
+                <exclude name="resources/**"/>
+                <exclude name="media/**"/>
+                <exclude name="docs/**"/>
+                <exclude name="bundles/**"/>
+            </fileset>
+        </copy>
+        <copy file="${basedir}/composer.json" todir="${WORKSPACE}/dist/"/>
+        <copy file="${basedir}/composer.lock" todir="${WORKSPACE}/dist/"/>
+    </target>
+
+
+    <target name="composer-dev-install-dep-to-build-dir" description="install dependencies">
+        <exec executable="/usr/bin/composer" dir="${WORKSPACE}/dist/">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+        </exec>
+    </target>
+
+    <target name="composer-prod-install-dep-to-build-dir" description="install dependencies">
+        <exec executable="/usr/bin/composer" dir="${WORKSPACE}/dist/">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+            <arg value="--optimize-autoloader" />
+            <arg value="--no-dev" />
+        </exec>
+    </target>
+
+    <!-- Removes the webroot directory on the remote server. -->
+    <target name="clean-build" description="Removes the additional">
+        <delete>
+            <fileset dir="${WORKSPACE}/dist/" includes="composer.*"/>
+            <fileset dir="${WORKSPACE}/dist/" includes=".git"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="info.php"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="*/docs"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="web/resources"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="web/media"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="web/bundles"/>
+            <fileset dir="${WORKSPACE}/dist/" includes="app/logs/**"/>
+        </delete>
+    </target>
+
+    <!-- Transfers the build to the specified environment. -->
+    <target name="transfer-build" description="cp the build to the artifact directory.">
+        <echo message="Cp the build to the artifact directory"/>
+        <copy todir="${WORKSPACE}/artifact">
+            <fileset dir="${WORKSPACE}/build"/>
+        </copy>
+    </target>
+
+    <target name="zip-build" description="zip the build to the artifact directory.">
+        <echo message="zip the build to the artifact directory."/>
+        <zip destfile="${WORKSPACE}/artifact/${BUILD_ID}.zip"
+             basedir="${WORKSPACE}/build"
+             update="true"
+        />
+    </target>
+
+    <target name="tests:unit" depends="
+            tests.unit
+        ">
+        <echo message="Success: All tests passed."/>
+    </target>
+
+    <target name="tests:integration" depends="
+            tests.integration
+        ">
+        <echo message="Success: All tests passed."/>
+    </target>
+
+    <target name="tests:functional" depends="
+            tests.functional,
+            tests.functional:domain
+        ">
+        <echo message="Success: All tests passed."/>
+    </target>
+
+    <target name="tests:e2e" depends="
+            tests.functional:web
+        ">
+        <echo message="Success: All tests passed."/>
+    </target>
+
+    <target name="tests" depends="
+            tests.unit,
+            tests.integration,
+            tests.functional,
+            tests.functional:domain,
+            tests.functional:web
+        ">
+        <echo message="Success: All tests passed."/>
+    </target>
+
+    <target name="dependencies:dev" description="install dev dependencies">
+        <exec executable="/usr/bin/composer" dir="${WORKSPACE}">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+        </exec>
+    </target>
+
+    <target name="dependencies:prod" description="install prod dependencies">
+        <exec executable="/usr/bin/composer" dir="${WORKSPACE}">
+            <arg value="install" />
+            <arg value="-q" />
+            <arg value="-n" />
+            <arg value="--optimize-autoloader" />
+            <arg value="--no-dev" />
+        </exec>
+    </target>
+</project>

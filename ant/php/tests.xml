@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Tests">
+
+    <property name="WORKSPACE" value="/"/>
+
+    <target name="unit" description="Perform Unit Tests">
+        <exec executable="phpunit">
+            <arg value="--testsuite" />
+            <arg value="unit" />
+        </exec>
+    </target>
+
+    <target name="integration" description="Perform Integration Tests">
+        <exec executable="phpunit">
+            <arg value="--testsuite" />
+            <arg value="integration" />
+        </exec>
+    </target>
+
+    <target name="functional" description="Perform Integration Tests">
+        <exec executable="phpunit">
+            <arg value="--testsuite" />
+            <arg value="functional" />
+        </exec>
+    </target>
+
+    <target name="functional:domain" description="Perform Unit Tests">
+        <exec executable="bin/behat">
+            <arg value="-c" />
+            <arg value="behat.yml" />
+            <arg value="-f" />
+            <arg value="progress" />
+        </exec>
+    </target>
+
+    <target name="functional:web" description="Perform Integration Tests">
+        <exec executable="bin/behat">
+            <arg value="-c" />
+            <arg value="behat_ui.yml" />
+            <arg value="-f" />
+            <arg value="progress" />
+        </exec>
+    </target>
+</project>
