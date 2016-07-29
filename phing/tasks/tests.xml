@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Tests" default="tests" basedir="." description="Prototype of abstract task execution tool">
+    <target name="tests" depends="
+            tests:unit,
+            tests:integration
+        ">
+        <echo msg="Success: All tests passed."/>
+    </target>
+
+    <target name="tests:unit">
+        <exec command="phpunit --testsuite=unit" passthru="true" checkreturn="true" level="error" />
+    </target>
+
+    <target name="tests:integration">
+        <exec command="phpunit --testsuite=integration" passthru="true" checkreturn="true" level="error" />
+    </target>
+</project>

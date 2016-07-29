@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dependencies" default="dep:development" basedir="." description="Prototype of abstract task execution tool">
+
+    <target name="dep:production">
+        <exec executable="composer" passthru="true" checkreturn="true" level="info">
+            <arg value="install" />
+            <arg value="--no-interaction" />
+            <arg value="--prefer-dist" />
+            <arg value="--optimize-autoloader" />
+            <arg value="--no-dev" />
+        </exec>
+    </target>
+
+    <target name="dep:development">
+        <exec executable="composer" passthru="true" checkreturn="true" level="info">
+            <arg value="install" />
+        </exec>
+    </target>
+</project>

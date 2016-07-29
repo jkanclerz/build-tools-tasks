@@ -1,0 +1,18 @@
+{
+  "name": "jkan/build-tasks",
+  "target-dir": "Creativestyle/Component/HumanTiming",
+  "description": "Common build tasks for tools",
+	"keywords": ["ant","phing", "build"],
+	"homepage": "https://github.com/jkanclerz/build-tools-tasks",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Jakub Kanclerz",
+			"email": "jakub@jkan.pl",
+			"homepage": "http://jkan.pl"
+		}
+	],
+	"require": {
+		"composer/installers": "*"
+	}
+}
