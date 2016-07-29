@@ -1,6 +1,6 @@
 {
   "name": "jkan/build-tasks",
-  "target-dir": "Creativestyle/Component/HumanTiming",
+  "type": "library",
   "description": "Common build tasks for tools",
 	"keywords": ["ant","phing", "build"],
 	"homepage": "https://github.com/jkanclerz/build-tools-tasks",
